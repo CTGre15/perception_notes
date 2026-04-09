@@ -102,6 +102,9 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
                               leading: PhotoAvatar(
                                 path: person.primaryPhotoPath,
                                 radius: 22,
+                                name: person.name,
+                                avatarStyle: person.avatarStyle,
+                                avatarGender: person.avatarGender,
                               ),
                               title: Text(person.name),
                               subtitle: Text(

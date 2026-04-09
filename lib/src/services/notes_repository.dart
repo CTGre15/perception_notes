@@ -24,7 +24,7 @@ class NotesRepository {
     final databasePath = p.join(directory.path, 'perception_notes.db');
     _database = await openDatabase(
       databasePath,
-      version: 3,
+      version: 5,
       onCreate: (db, version) async {
         await db.execute('''
           CREATE TABLE people (
@@ -37,6 +37,8 @@ class NotesRepository {
             age INTEGER,
             details TEXT NOT NULL DEFAULT '',
             profile_photo_path TEXT,
+            avatar_style INTEGER NOT NULL DEFAULT 0,
+            avatar_gender TEXT NOT NULL DEFAULT 'female',
             custom_fields TEXT NOT NULL DEFAULT '[]',
             is_pinned INTEGER NOT NULL DEFAULT 0,
             created_at TEXT NOT NULL,
@@ -81,6 +83,16 @@ class NotesRepository {
           );
           await db.execute(
             "ALTER TABLE notes ADD COLUMN is_pinned INTEGER NOT NULL DEFAULT 0",
+          );
+        }
+        if (oldVersion < 4) {
+          await db.execute(
+            "ALTER TABLE people ADD COLUMN avatar_style INTEGER NOT NULL DEFAULT 0",
+          );
+        }
+        if (oldVersion < 5) {
+          await db.execute(
+            "ALTER TABLE people ADD COLUMN avatar_gender TEXT NOT NULL DEFAULT 'female'",
           );
         }
       },
@@ -289,6 +301,23 @@ class NotesRepository {
         await file.delete();
       }
     }
+  }
+
+  Future<void> setAvatarChoice(
+    int personId, {
+    required int avatarStyle,
+    required AvatarGender avatarGender,
+  }) async {
+    await _db.update(
+      'people',
+      {
+        'avatar_style': avatarStyle,
+        'avatar_gender': avatarGenderToValue(avatarGender),
+        'updated_at': DateTime.now().toIso8601String(),
+      },
+      where: 'id = ?',
+      whereArgs: [personId],
+    );
   }
 
   Future<GlobalSearchResult> searchEverything(String query) async {

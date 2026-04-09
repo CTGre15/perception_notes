@@ -16,6 +16,16 @@ class CustomField {
   }
 }
 
+enum AvatarGender { female, male }
+
+AvatarGender avatarGenderFromValue(String? value) {
+  return value == 'male' ? AvatarGender.male : AvatarGender.female;
+}
+
+String avatarGenderToValue(AvatarGender value) {
+  return value == AvatarGender.male ? 'male' : 'female';
+}
+
 class PersonSummary {
   const PersonSummary({
     required this.id,
@@ -25,6 +35,8 @@ class PersonSummary {
     required this.course,
     required this.age,
     required this.primaryPhotoPath,
+    required this.avatarStyle,
+    required this.avatarGender,
     required this.customFields,
     required this.isPinned,
   });
@@ -36,6 +48,8 @@ class PersonSummary {
   final String course;
   final int? age;
   final String? primaryPhotoPath;
+  final int avatarStyle;
+  final AvatarGender avatarGender;
   final List<CustomField> customFields;
   final bool isPinned;
 
@@ -48,6 +62,8 @@ class PersonSummary {
       course: map['course'] as String? ?? '',
       age: map['age'] as int?,
       primaryPhotoPath: map['profile_photo_path'] as String?,
+      avatarStyle: map['avatar_style'] as int? ?? 0,
+      avatarGender: avatarGenderFromValue(map['avatar_gender'] as String?),
       customFields: customFieldsFromJson(map['custom_fields'] as String?),
       isPinned: ((map['is_pinned'] as int?) ?? 0) == 1,
     );
@@ -65,6 +81,8 @@ class PersonRecord {
     required this.age,
     required this.details,
     required this.profilePhotoPath,
+    required this.avatarStyle,
+    required this.avatarGender,
     required this.customFields,
     required this.isPinned,
     required this.createdAt,
@@ -80,6 +98,8 @@ class PersonRecord {
   final int? age;
   final String details;
   final String? profilePhotoPath;
+  final int avatarStyle;
+  final AvatarGender avatarGender;
   final List<CustomField> customFields;
   final bool isPinned;
   final DateTime createdAt;
@@ -98,6 +118,8 @@ class PersonRecord {
       age: map['age'] as int?,
       details: map['details'] as String? ?? '',
       profilePhotoPath: map['profile_photo_path'] as String?,
+      avatarStyle: map['avatar_style'] as int? ?? 0,
+      avatarGender: avatarGenderFromValue(map['avatar_gender'] as String?),
       customFields: customFieldsFromJson(map['custom_fields'] as String?),
       isPinned: ((map['is_pinned'] as int?) ?? 0) == 1,
       createdAt: DateTime.parse(map['created_at'] as String),
@@ -116,6 +138,8 @@ class PersonRecord {
       'age': age,
       'details': details,
       'profile_photo_path': profilePhotoPath,
+      'avatar_style': avatarStyle,
+      'avatar_gender': avatarGenderToValue(avatarGender),
       'custom_fields': customFieldsToJson(customFields),
       'is_pinned': isPinned ? 1 : 0,
       'created_at': createdAt.toIso8601String(),

@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -134,6 +133,25 @@ class _PersonDetailScreenState extends State<PersonDetailScreen> {
 
   Future<void> _removeProfilePhoto() async {
     await widget.repository.clearProfilePhoto(widget.personId);
+    _refresh();
+  }
+
+  Future<void> _pickGeneratedPlaceholder(PersonRecord person) async {
+    final chosen = await showAvatarStylePicker(
+      context,
+      name: person.name,
+      currentStyle: person.avatarStyle,
+      currentGender: person.avatarGender,
+    );
+    if (chosen == null) {
+      return;
+    }
+    await widget.repository.setAvatarChoice(
+      person.id,
+      avatarStyle: chosen.style,
+      avatarGender: chosen.gender,
+    );
+    await widget.repository.clearProfilePhoto(person.id);
     _refresh();
   }
 
@@ -276,9 +294,16 @@ class _PersonDetailScreenState extends State<PersonDetailScreen> {
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            PhotoAvatar(
-                              path: details.primaryPhotoPath,
-                              radius: 42,
+                            InkWell(
+                              borderRadius: BorderRadius.circular(999),
+                              onTap: () => _pickGeneratedPlaceholder(person),
+                              child: PhotoAvatar(
+                                path: details.primaryPhotoPath,
+                                radius: 42,
+                                name: person.name,
+                                avatarStyle: person.avatarStyle,
+                                avatarGender: person.avatarGender,
+                              ),
                             ),
                             const SizedBox(width: 16),
                             Expanded(
@@ -338,6 +363,11 @@ class _PersonDetailScreenState extends State<PersonDetailScreen> {
                                 child: const Text('Remove profile picture'),
                               ),
                           ],
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Tap the avatar to choose a generated icon.',
+                          style: Theme.of(context).textTheme.bodySmall,
                         ),
                         if (filteredFields.isNotEmpty) ...[
                           const SizedBox(height: 18),
