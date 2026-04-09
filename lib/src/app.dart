@@ -468,7 +468,13 @@ class PersonCard extends StatelessWidget {
           padding: const EdgeInsets.all(18),
           child: Row(
             children: [
-              PhotoAvatar(path: person.primaryPhotoPath, radius: 30),
+              PhotoAvatar(
+                path: person.primaryPhotoPath,
+                radius: 30,
+                name: person.name,
+                avatarStyle: person.avatarStyle,
+                avatarGender: person.avatarGender,
+              ),
               const SizedBox(width: 16),
               Expanded(
                 child: Column(

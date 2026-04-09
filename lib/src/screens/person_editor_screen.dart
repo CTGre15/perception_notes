@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -34,6 +36,8 @@ class _PersonEditorScreenState extends State<PersonEditorScreen> {
   String? _profilePhotoPath;
   String? _newProfilePhotoSourcePath;
   bool _removeExistingProfilePhoto = false;
+  late int _avatarStyle;
+  late AvatarGender _avatarGender;
 
   bool get _isEditing => widget.person != null;
 
@@ -49,6 +53,10 @@ class _PersonEditorScreenState extends State<PersonEditorScreen> {
     _detailsController = TextEditingController(text: person?.details ?? '');
     _birthday = person?.birthday;
     _profilePhotoPath = person?.profilePhotoPath;
+    _avatarStyle = person?.avatarStyle ?? Random().nextInt(5000);
+    _avatarGender =
+        person?.avatarGender ??
+        (Random().nextBool() ? AvatarGender.female : AvatarGender.male);
 
     final fields = _buildInitialFields(person);
     if (fields.isEmpty) {
@@ -130,6 +138,25 @@ class _PersonEditorScreenState extends State<PersonEditorScreen> {
     });
   }
 
+  Future<void> _pickGeneratedPlaceholder() async {
+    final chosen = await showAvatarStylePicker(
+      context,
+      name: _nameController.text.trim(),
+      currentStyle: _avatarStyle,
+      currentGender: _avatarGender,
+    );
+    if (chosen == null) {
+      return;
+    }
+    setState(() {
+      _avatarStyle = chosen.style;
+      _avatarGender = chosen.gender;
+      _newProfilePhotoSourcePath = null;
+      _profilePhotoPath = null;
+      _removeExistingProfilePhoto = false;
+    });
+  }
+
   Future<void> _save() async {
     if (_saving) {
       return;
@@ -172,6 +199,8 @@ class _PersonEditorScreenState extends State<PersonEditorScreen> {
       age: int.tryParse(_ageController.text.trim()),
       details: _detailsController.text.trim(),
       profilePhotoPath: widget.person?.profilePhotoPath,
+      avatarStyle: _avatarStyle,
+      avatarGender: _avatarGender,
       customFields: customFields,
       isPinned: widget.person?.isPinned ?? false,
       createdAt: widget.person?.createdAt ?? DateTime.now(),
@@ -211,12 +240,29 @@ class _PersonEditorScreenState extends State<PersonEditorScreen> {
           Center(
             child: Column(
               children: [
-                PhotoAvatar(path: _profilePhotoPath, radius: 42),
+                InkWell(
+                  borderRadius: BorderRadius.circular(999),
+                  onTap: _pickGeneratedPlaceholder,
+                  child: PhotoAvatar(
+                    path: _profilePhotoPath,
+                    radius: 42,
+                    name: _nameController.text,
+                    avatarStyle: _avatarStyle,
+                    avatarGender: _avatarGender,
+                  ),
+                ),
                 const SizedBox(height: 10),
                 FilledButton.tonalIcon(
                   onPressed: _pickProfilePhoto,
                   icon: const Icon(Icons.photo_camera_back_outlined),
                   label: const Text('Choose profile picture'),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  _profilePhotoPath == null
+                      ? 'Tap the avatar to choose a generated icon'
+                      : 'Tap the avatar to switch back to a generated icon',
+                  style: Theme.of(context).textTheme.bodySmall,
                 ),
                 if (_isEditing && widget.person?.profilePhotoPath != null)
                   TextButton(
@@ -236,6 +282,7 @@ class _PersonEditorScreenState extends State<PersonEditorScreen> {
           TextField(
             controller: _nameController,
             textCapitalization: TextCapitalization.words,
+            onChanged: (_) => setState(() {}),
             decoration: const InputDecoration(
               labelText: 'Name',
               hintText: 'Full name',
