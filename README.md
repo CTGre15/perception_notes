@@ -1,17 +1,28 @@
-# perception_notes
+# Perception Notes
 
-A new Flutter project.
+Perception Notes is a private little app for keeping notes about the people in your life.
 
-## Getting Started
+You can make a profile for someone, write things you want to remember about them, add pictures, and keep everything saved locally on your device. It’s meant to feel simple, personal, and low-pressure.
 
-This project is a starting point for a Flutter application.
+## What it does
 
-A few resources to get you started if this is your first Flutter project:
+- keeps notes about people
+- saves everything locally
+- lets you add custom details
+- supports profile pictures and extra photos
+- has search, pinning, backup, and app lock
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+## Built with
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+- Flutter
+- SQLite
+
+## Why this app exists
+
+Sometimes you just want a quiet place to remember small details about people without turning it into a whole social app or cloud service.
+
+This app is for that.
+
+## Developer
+
+Made by entropious, a Filipino full stack developer.
