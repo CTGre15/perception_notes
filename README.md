@@ -23,4 +23,6 @@ Sometimes you just want a quiet place to remember small details about people wit
 
 This app is for that.
 
+## Developer
+
 Made by entropious, a Filipino full stack developer.
